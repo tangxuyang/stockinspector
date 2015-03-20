@@ -1,0 +1,1 @@
+var tradeData_qmpic_000835_1_8={"type":'Month',"picWidth":488,"left":46,"right":46,"top":18,"bottom":3,"mainHeight":137.6087,"count":0,"IsIndex":true,"datas":[]};

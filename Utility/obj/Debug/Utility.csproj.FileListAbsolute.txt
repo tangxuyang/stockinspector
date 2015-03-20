@@ -1,0 +1,9 @@
+F:\github\StockInspector\Utility\bin\Debug\Utility.exe.config
+F:\github\StockInspector\Utility\bin\Debug\Utility.exe
+F:\github\StockInspector\Utility\bin\Debug\Utility.pdb
+F:\github\StockInspector\Utility\obj\Debug\Utility.csprojResolveAssemblyReference.cache
+F:\github\StockInspector\Utility\obj\Debug\Utility.Form1.resources
+F:\github\StockInspector\Utility\obj\Debug\Utility.Properties.Resources.resources
+F:\github\StockInspector\Utility\obj\Debug\Utility.csproj.GenerateResource.Cache
+F:\github\StockInspector\Utility\obj\Debug\Utility.exe
+F:\github\StockInspector\Utility\obj\Debug\Utility.pdb

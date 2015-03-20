@@ -1,0 +1,8 @@
+F:\github\StockInspector\StockInspector\bin\Debug\StockInspector.exe.config
+F:\github\StockInspector\StockInspector\obj\Debug\StockInspector.csprojResolveAssemblyReference.cache
+F:\github\StockInspector\StockInspector\bin\Debug\StockInspector.exe
+F:\github\StockInspector\StockInspector\bin\Debug\StockInspector.pdb
+F:\github\StockInspector\StockInspector\bin\Debug\Newtonsoft.Json.dll
+F:\github\StockInspector\StockInspector\bin\Debug\Newtonsoft.Json.xml
+F:\github\StockInspector\StockInspector\obj\Debug\StockInspector.exe
+F:\github\StockInspector\StockInspector\obj\Debug\StockInspector.pdb

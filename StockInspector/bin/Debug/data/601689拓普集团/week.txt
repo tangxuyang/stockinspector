@@ -1,0 +1,1 @@
+var tradeData_qmpic_601689_1_7={"type":'Week',"picWidth":488,"left":36,"right":46,"top":18,"bottom":3,"mainHeight":137.6087,"count":1,"IsIndex":false,"datas":[['2015-3-20','16.37','18.01','16.37','18.01','6.64','58.40%','1524.6400ÊÖ','255.6188ÍòÔª','']]};
