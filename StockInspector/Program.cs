@@ -11,60 +11,128 @@ namespace StockInspector
 {
     class Program
     {
+        static string minuteUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_1&t=202122";
+        static string dayUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_6&t=202122";
+        static string weekUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_7&t=202122";
+        static string monthUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_8&t=202122"; 
         static void Main(string[] args)
         {
-            //Get all stocks
-            var stocks = GetStocks();
-            Console.WriteLine("Get stocks successfully..");
 
-            string minuteUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_1&t=202122";
-            string dayUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_6&t=202122";
-            string weekUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_7&t=202122";
-            string monthUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_8&t=202122";
-
-            //Get data of every stock
-            string tempMinute,tempDay,tempWeek,tempMonth;
-            string parentfolder = "data";
-            DirectoryInfo dir;
-            foreach(var stock in stocks)
+            while (true)
             {
-                string stockid = stock.Key;
-                string stockname = stock.Value.Replace('*', '#');
-                string foldername = stockid + stockname;
-                string folderpath = Path.Combine(parentfolder, foldername);
-                try
+                //Get data of every stock
+                string tempMinute, tempDay, tempWeek, tempMonth;
+                string parentfolder = Prompt("请输入数据目录（默认当前目录中data）:");
+                string stockStr = Prompt("请输入股票编码和名称，形式入000006-某某股票，用分号分割（不输代表全部）：");
+                Dictionary<string, string> stocks;
+                if (string.IsNullOrEmpty(stockStr))
                 {
-
-                    if (!Directory.Exists(folderpath))
-                    {
-                        dir = Directory.CreateDirectory(folderpath);
-                    }
-                    else
-                    {
-                        dir = new DirectoryInfo(folderpath);
-                    }
-
-                    tempMinute = string.Format(minuteUrl, stockid);
-                    tempDay = string.Format(dayUrl, stockid);
-                    tempWeek = string.Format(weekUrl, stockid);
-                    tempMonth = string.Format(monthUrl, stockid);
-
-                    DownloadFile(tempMinute, Path.Combine(dir.FullName, "minute.txt"));
-                    DownloadFile(tempDay, Path.Combine(dir.FullName, "day.txt"));
-                    DownloadFile(tempWeek, Path.Combine(dir.FullName, "week.txt"));
-                    DownloadFile(tempMonth, Path.Combine(dir.FullName, "month.txt"));
-
-                    Console.WriteLine(foldername+"successfully..");
-                    System.Threading.Thread.Sleep(100);
+                    stocks = GetStocks();
                 }
-                catch(Exception ex)
+                else
                 {
-                    Log.WriteLog("Error"+ ex.Message+"("+foldername+")");
-                    Console.WriteLine("Error" + ex.Message + "(" + foldername + ")");
+                    stocks = new Dictionary<string, string>();
+                    var tempStrs = stockStr.Split(';');
+                    foreach (string str in tempStrs)
+                    {
+                        var stock = str.Split('-');
+                        if (stock.Length == 2)
+                        {
+                            stocks.Add(stock[0], stock[1]);
+                        }
+                    }
+                }
+                string type = Prompt("请输入数据类型（1-分时,2-日K,3-周K,4-月K），格式如1;2;3;4（不选代表全部）");
+                bool minute = false, day = false, week = false, month = false;
+                if (string.IsNullOrEmpty(type))
+                {
+                    minute = true;
+                    day = true;
+                    week = true;
+                    month = true;
+                }
+                else
+                {
+                    var strs = type.Split(';');
+                    foreach (string str in strs)
+                    {
+                        switch (str)
+                        {
+                            case "1":
+                                minute = true;
+                                break;
+                            case "2":
+                                day = true;
+                                break;
+                            case "3":
+                                week = true;
+                                break;
+                            case "4":
+                                month = true;
+                                break;
+                        }
+                    }
+                }
+
+                DirectoryInfo dir;
+
+                foreach (var stock in stocks)
+                {
+                    string stockid = stock.Key;
+                    string stockname = stock.Value.Replace('*', '#');
+                    string foldername = stockid + stockname;
+                    string folderpath = Path.Combine(parentfolder, foldername);
+                    try
+                    {
+
+                        if (!Directory.Exists(folderpath))
+                        {
+                            dir = Directory.CreateDirectory(folderpath);
+                        }
+                        else
+                        {
+                            dir = new DirectoryInfo(folderpath);
+                        }
+
+                        tempMinute = string.Format(minuteUrl, stockid);
+                        tempDay = string.Format(dayUrl, stockid);
+                        tempWeek = string.Format(weekUrl, stockid);
+                        tempMonth = string.Format(monthUrl, stockid);
+
+                        if (minute)
+                        {
+                            DownloadFile(tempMinute, Path.Combine(dir.FullName, "minute.txt"));
+                        }
+                        if (day)
+                        {
+                            DownloadFile(tempDay, Path.Combine(dir.FullName, "day.txt"));
+                        }
+                        if (week)
+                        {
+                            DownloadFile(tempWeek, Path.Combine(dir.FullName, "week.txt"));
+                        }
+                        if (month)
+                        {
+                            DownloadFile(tempMonth, Path.Combine(dir.FullName, "month.txt"));
+                        }
+
+                        Console.WriteLine(foldername + "successfully..");
+                        System.Threading.Thread.Sleep(100);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.WriteLog("Error" + ex.Message + "(" + foldername + ")");
+                        Console.WriteLine("Error" + ex.Message + "(" + foldername + ")");
+                    }
+                }
+
+                Log.WriteLog("Downloading over...");
+                string answer = Prompt("是否退出");
+                if (answer != null && answer.ToLower() == "y")
+                {
+                    return;
                 }
             }
-
-            Log.WriteLog("Downloading over...");
         }
 
         static Dictionary<string,string> GetStocks()
@@ -105,7 +173,11 @@ namespace StockInspector
             Log.WriteLog("Downlaod " + file + " from " + url);
         }
 
-
+        static string Prompt(string msg)
+        {
+            Console.WriteLine(msg);
+            return Console.ReadLine();
+        }
     }
 
     public class Log
