@@ -10,6 +10,8 @@ namespace StockInspector
     {
         public List<MinuteData> Analyze(string data)
         {
+            string stockID = data.Substring(0, data.IndexOf('=')).Split('_')[2];
+
             List<MinuteData> result = new List<MinuteData>();
             int startIndex, endIndex;
             startIndex = data.IndexOf("[[");
@@ -28,6 +30,7 @@ namespace StockInspector
                 d.UpDownPercent = double.Parse(strs[4].Remove(strs[4].Length-1));
                 d.UpDownAmount = double.Parse(strs[5]);
                 d.MeanPrice = double.Parse(strs[6]);
+                d.StockID = stockID;
                 result.Add(d);
             }
 
@@ -51,6 +54,7 @@ namespace StockInspector
 
     public class MinuteData
     {
+        public string StockID { get; set; }
         /// <summary>
         /// 时间,精确到分钟
         /// </summary>

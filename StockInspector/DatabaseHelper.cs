@@ -18,10 +18,10 @@ namespace StockInspector
             command.Connection = conn;
             conn.Open();
             StringBuilder sql = new StringBuilder();
-            string format = "insert into minutedata values('{0}',{1},{2},{3},{4},{5},{6},'{7}','{8}');";
+            string format = "insert into minutedata(stockid,minute,dealprice,dealquantity,dealamount,updownpercent,updownamount,meanprice,createdate,lastchangedate) values('{0}','{1}',{2},{3},{4},{5},{6},{7},'{8}','{9}');";
             foreach(var d in data)
             {
-                sql.Append(string.Format(format,d.Date,d.DealPrice,d.DealQuantity,d.DealAmount,d.UpDownPercent,d.UpDownAmount,d.MeanPrice,DateTime.Now,DateTime.Now));
+                sql.Append(string.Format(format,d.StockID,d.Date,d.DealPrice,d.DealQuantity,d.DealAmount,d.UpDownPercent,d.UpDownAmount,d.MeanPrice,DateTime.Now,DateTime.Now));
             }
 
             command.CommandText = sql.ToString();
