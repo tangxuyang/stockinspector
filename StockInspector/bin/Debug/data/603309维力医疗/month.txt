@@ -1,1 +1,0 @@
-var tradeData_qmpic_603309_1_8={"type":'Month',"picWidth":488,"left":36,"right":46,"top":18,"bottom":3,"mainHeight":137.6087,"count":1,"IsIndex":false,"datas":[['2015-3-20','18.48','47.50','18.48','44.71','29.31','190.32%','72.6320万手','31.4525亿元','']]};
