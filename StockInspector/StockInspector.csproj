@@ -46,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractData.cs" />
+    <Compile Include="DatabaseHelper.cs" />
+    <Compile Include="DayDataAnalyzer.cs" />
+    <Compile Include="MinuteDataAnalyzer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TradeData.cs" />

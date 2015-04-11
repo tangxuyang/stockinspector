@@ -18,6 +18,30 @@ namespace StockInspector
         static void Main(string[] args)
         {
 
+            //DownlaodData();
+            Analyze();
+        }
+
+        static void Analyze()
+        {
+            string filepath = "minute.txt";
+            FileStream fs = new FileStream(filepath, FileMode.Open);
+            StreamReader sr = new StreamReader(fs, Encoding.Default);
+            //byte[] buffer = new byte[fs.Length];
+            //fs.Read(buffer,0,buffer.Length);
+
+            //string str = Encoding.Default.GetString(buffer);
+            string str = sr.ReadToEnd();
+            MinuteDataAnalyzer mda = new MinuteDataAnalyzer();
+            var data = mda.Analyze(str);
+
+            Console.WriteLine("analyze...");
+            Console.ReadLine();
+            DatabaseHelper.InsertIntoMinuteData(data);
+        }
+
+        static void DownlaodData()
+        {
             while (true)
             {
                 //Get data of every stock
@@ -135,6 +159,7 @@ namespace StockInspector
             }
         }
 
+
         static Dictionary<string,string> GetStocks()
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
@@ -159,16 +184,22 @@ namespace StockInspector
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
             FileStream fs = new FileStream(file,FileMode.Create);
             Stream stream = request.GetResponse().GetResponseStream();
-            byte[] buffer = new byte[102400];
-
+            //StreamWriter sw = new StreamWriter(fs);
+            //StreamReader sr = new StreamReader(stream);
+            //sw.Write(sr.ReadToEnd());
+            //byte[] buffer = new byte[102400];
+            byte[] buffer = new byte[stream.Length];
+            stream.Read(buffer, 0, buffer.Length);
             int n = 0;
-            while((n = stream.Read(buffer,0,buffer.Length))>0)
+            while ((n = stream.Read(buffer, 0, buffer.Length)) > 0)
             {
                 fs.Write(buffer, 0, n);
             }
-
+            //sr.Close();
             stream.Close();
+            //sw.Close();
             fs.Close();
+            
 
             Log.WriteLog("Downlaod " + file + " from " + url);
         }
