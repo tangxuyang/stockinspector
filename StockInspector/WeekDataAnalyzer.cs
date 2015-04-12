@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace StockInspector
 {
-    public class DayDataAnalyzer
+    public class WeekDataAnalyzer
     {
-        public List<DayData> Analyze(string data)
+        public List<WeekData> Analyze(string data)
         {
             string stockID = AnalyzerHelper.GetStockID(data);
 
-            List<DayData> result = new List<DayData>();
+            List<WeekData> result = new List<WeekData>();
             int startIndex, endIndex;
             startIndex = data.IndexOf("[[");
             endIndex = data.IndexOf("]]");
@@ -22,7 +22,7 @@ namespace StockInspector
             {
                 tempStr = str.Trim('[', ']');
                 var strs = AnalyzerHelper.Split(tempStr);
-                var d = new DayData();
+                var d = new WeekData();
                 d.Date = DateTime.Parse(strs[0]);
                 d.OpenPrice = double.Parse(strs[1]);
                 d.HighestPrice = double.Parse(strs[2]);
@@ -30,9 +30,8 @@ namespace StockInspector
                 d.ClosePrice = double.Parse(strs[4]);
                 d.UpDownAmount = double.Parse(strs[5]);
                 d.UpDownPercent = double.Parse(strs[6].Remove(strs[6].Length - 1));
-                d.DealQuantity = double.Parse(strs[7].Remove(strs[7].Length - 2))*10000;
-                d.DealAmount = double.Parse(strs[8].Remove(strs[8].Length - 2))*100000000;
-                d.ExchangePercent = double.Parse(strs[9].Trim()==""?"0":strs[9].Remove(strs[9].Length-1));
+                d.DealQuantity = double.Parse(strs[7].Remove(strs[7].Length - 2)) * 10000;
+                d.DealAmount = double.Parse(strs[8].Remove(strs[8].Length - 2)) * 100000000;               
                 d.StockID = stockID;
                 result.Add(d);
             }
@@ -42,7 +41,7 @@ namespace StockInspector
         }
     }
 
-    public class DayData
+    public class WeekData
     {
         /// <summary>
         /// 日前，按天
@@ -80,10 +79,6 @@ namespace StockInspector
         /// 成交额（元）
         /// </summary>
         public double DealAmount { get; set; }
-        /// <summary>
-        /// 换手率（百分比）
-        /// </summary>
-        public double ExchangePercent { get; set; }
 
         public string StockID { get; set; }
     }

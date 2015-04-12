@@ -10,7 +10,7 @@ namespace StockInspector
     {
         public List<MinuteData> Analyze(string data)
         {
-            string stockID = data.Substring(0, data.IndexOf('=')).Split('_')[2];
+            string stockID = AnalyzerHelper.GetStockID(data);
 
             List<MinuteData> result = new List<MinuteData>();
             int startIndex, endIndex;
@@ -21,12 +21,12 @@ namespace StockInspector
             foreach(var str in list)
             {
                 tempStr = str.Trim('[',']');
-                var strs = Split(tempStr);
+                var strs = AnalyzerHelper.Split(tempStr);
                 var d = new MinuteData();
                 d.Date = DateTime.Parse(strs[0]);
                 d.DealPrice = double.Parse(strs[1]);
                 d.DealQuantity = int.Parse(strs[2].Remove(strs[2].Length-1));
-                d.DealAmount = double.Parse(strs[3].Remove(strs[3].Length - 2));
+                d.DealAmount = double.Parse(strs[3].Remove(strs[3].Length - 2))*10000;
                 d.UpDownPercent = double.Parse(strs[4].Remove(strs[4].Length-1));
                 d.UpDownAmount = double.Parse(strs[5]);
                 d.MeanPrice = double.Parse(strs[6]);
@@ -34,19 +34,6 @@ namespace StockInspector
                 result.Add(d);
             }
 
-
-            return result;
-        }
-
-        private List<string> Split(string str)
-        {
-            //'2015-4-3 09:30','5.84','54909手','3215.94万元','-1.02%','-0.06','5.86'
-            var strs = str.Split(',');
-            List<string> result = new List<string>();
-            foreach(var s in strs)
-            {
-                result.Add(s.Trim('\''));
-            }
 
             return result;
         }
@@ -68,7 +55,7 @@ namespace StockInspector
         /// </summary>
         public int DealQuantity{get;set;}
         /// <summary>
-        /// 成交额（万元）
+        /// 成交额（元）
         /// </summary>
         public double DealAmount{get;set;}
         /// <summary>
@@ -84,6 +71,4 @@ namespace StockInspector
         /// </summary>
         public double MeanPrice{get;set;}
     }
-
-
 }

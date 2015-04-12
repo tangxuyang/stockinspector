@@ -19,25 +19,79 @@ namespace StockInspector
         {
 
             //DownlaodData();
-            Analyze();
+            //Analyze();
+            InitialStock();
+        }
+
+        static void InitialStock()
+        {
+            var stocks = GetStocks();
+            List<Stock> sts = new List<Stock>();
+            foreach(var k in stocks)
+            {
+                sts.Add(new Stock() { 
+                    StockID = k.Key,
+                    StockName = k.Value
+                });
+            }
+
+            DatabaseHelper.InsertIntoStock(sts);
         }
 
         static void Analyze()
         {
-            string filepath = "minute.txt";
-            FileStream fs = new FileStream(filepath, FileMode.Open);
-            StreamReader sr = new StreamReader(fs, Encoding.Default);
-            //byte[] buffer = new byte[fs.Length];
-            //fs.Read(buffer,0,buffer.Length);
+            string minuteFileName= "minute.txt";
+            string dayFileName = "day.txt";
+            string weekFileName = "week.txt";
+            string monthFileName = "month.txt";
 
-            //string str = Encoding.Default.GetString(buffer);
+            //MinuteData
+            FileStream fs = new FileStream(minuteFileName, FileMode.Open);
+            StreamReader sr = new StreamReader(fs, Encoding.Default);
+
             string str = sr.ReadToEnd();
+            sr.Close();
+            fs.Close();
             MinuteDataAnalyzer mda = new MinuteDataAnalyzer();
-            var data = mda.Analyze(str);
+            var minuteData = mda.Analyze(str);
+
+            //DayData
+            fs = new FileStream(dayFileName, FileMode.Open);
+            sr = new StreamReader(fs, Encoding.Default);
+
+            str = sr.ReadToEnd();
+            sr.Close();
+            fs.Close();
+            DayDataAnalyzer dda = new DayDataAnalyzer();
+            var dayData = dda.Analyze(str);
+
+            //WeekData
+            fs = new FileStream(weekFileName, FileMode.Open);
+            sr = new StreamReader(fs, Encoding.Default);
+
+            str = sr.ReadToEnd();
+            sr.Close();
+            fs.Close();
+            WeekDataAnalyzer wda = new WeekDataAnalyzer();
+            var weekData = wda.Analyze(str);
+
+
+            //MonthData
+            fs = new FileStream(monthFileName, FileMode.Open);
+            sr = new StreamReader(fs, Encoding.Default);
+
+            str = sr.ReadToEnd();
+            sr.Close();
+            fs.Close();
+            MonthDataAnalyzer mmda = new MonthDataAnalyzer();
+            var monthData = mmda.Analyze(str);
+
+            DatabaseHelper.InsertIntoMinuteData(minuteData);
+            DatabaseHelper.InsertIntoDayData(dayData);
+            DatabaseHelper.InsertIntoWeekData(weekData);
+            DatabaseHelper.InsertIntoMonthData(monthData);
 
             Console.WriteLine("analyze...");
-            Console.ReadLine();
-            DatabaseHelper.InsertIntoMinuteData(data);
         }
 
         static void DownlaodData()
