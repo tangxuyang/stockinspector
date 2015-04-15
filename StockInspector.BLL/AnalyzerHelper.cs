@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StockInspector
+namespace StockInspector.BLL
 {
     public class AnalyzerHelper
     {

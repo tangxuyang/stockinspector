@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.IO;
 using System.Net;
+using StockInspector.BLL;
+using StockInspector.BLL.Entity;
+using StockInspector.BLL.Net;
+using StockInspector.BLL.Log;
 
 namespace StockInspector
 {
@@ -26,16 +30,25 @@ namespace StockInspector
         static void InitialStock()
         {
             var stocks = GetStocks();
-            List<Stock> sts = new List<Stock>();
+            List<StockEntity> sts = new List<StockEntity>();
             foreach(var k in stocks)
             {
-                sts.Add(new Stock() { 
+                sts.Add(new StockEntity() { 
                     StockID = k.Key,
                     StockName = k.Value
                 });
             }
 
             DatabaseHelper.InsertIntoStock(sts);
+        }
+
+        static Dictionary<string,string> GetStocks()
+        {
+            string path = "../../Stocks.xml";
+            StreamReader sr = new StreamReader(path);
+            var stocks = Stock.GetStocks(sr.ReadToEnd());
+
+            return stocks;
         }
 
         static void Analyze()
@@ -179,19 +192,19 @@ namespace StockInspector
 
                         if (minute)
                         {
-                            DownloadFile(tempMinute, Path.Combine(dir.FullName, "minute.txt"));
+                            NetHelper.DownloadFile(tempMinute, Path.Combine(dir.FullName, "minute.txt"));
                         }
                         if (day)
                         {
-                            DownloadFile(tempDay, Path.Combine(dir.FullName, "day.txt"));
+                            NetHelper.DownloadFile(tempDay, Path.Combine(dir.FullName, "day.txt"));
                         }
                         if (week)
                         {
-                            DownloadFile(tempWeek, Path.Combine(dir.FullName, "week.txt"));
+                            NetHelper.DownloadFile(tempWeek, Path.Combine(dir.FullName, "week.txt"));
                         }
                         if (month)
                         {
-                            DownloadFile(tempMonth, Path.Combine(dir.FullName, "month.txt"));
+                            NetHelper.DownloadFile(tempMonth, Path.Combine(dir.FullName, "month.txt"));
                         }
 
                         Console.WriteLine(foldername + "successfully..");
@@ -199,85 +212,24 @@ namespace StockInspector
                     }
                     catch (Exception ex)
                     {
-                        Log.WriteLog("Error" + ex.Message + "(" + foldername + ")");
+                        Logger.WriteLog("Error" + ex.Message + "(" + foldername + ")");
                         Console.WriteLine("Error" + ex.Message + "(" + foldername + ")");
                     }
                 }
 
-                Log.WriteLog("Downloading over...");
+                Logger.WriteLog("Downloading over...");
                 string answer = Prompt("是否退出");
                 if (answer != null && answer.ToLower() == "y")
                 {
                     return;
                 }
             }
-        }
-
-
-        static Dictionary<string,string> GetStocks()
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            string path = "../../Stocks.xml";
-            XmlDocument doc = new XmlDocument();
-            doc.Load(path);
-
-            XmlElement root = doc.DocumentElement;
-            foreach (XmlNode ul in root.ChildNodes)
-            {
-                foreach (XmlNode li in ul.ChildNodes)
-                {
-                    result.Add(li.FirstChild.FirstChild.InnerText,li.LastChild.InnerText);
-                }
-            }
-
-            return result;
-        }
-
-        static void DownloadFile(string url,string file)
-        {
-            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-            FileStream fs = new FileStream(file,FileMode.Create);
-            Stream stream = request.GetResponse().GetResponseStream();
-            //StreamWriter sw = new StreamWriter(fs);
-            //StreamReader sr = new StreamReader(stream);
-            //sw.Write(sr.ReadToEnd());
-            //byte[] buffer = new byte[102400];
-            byte[] buffer = new byte[stream.Length];
-            stream.Read(buffer, 0, buffer.Length);
-            int n = 0;
-            while ((n = stream.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                fs.Write(buffer, 0, n);
-            }
-            //sr.Close();
-            stream.Close();
-            //sw.Close();
-            fs.Close();
-            
-
-            Log.WriteLog("Downlaod " + file + " from " + url);
-        }
+        } 
 
         static string Prompt(string msg)
         {
             Console.WriteLine(msg);
             return Console.ReadLine();
-        }
-    }
-
-    public class Log
-    {
-        private static StreamWriter sw;
-        static Log()
-        {
-            string filename = "log"+DateTime.Now.Ticks.ToString()+".txt";
-            sw = new StreamWriter(filename);
-        }
-
-        public static void WriteLog(string str)
-        {
-            sw.WriteLine(str + "[" + DateTime.Now.ToString() + "]");
-            sw.Flush();
         }
     }
 }

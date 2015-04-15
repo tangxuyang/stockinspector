@@ -45,18 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractData.cs" />
-    <Compile Include="AnalyzerHelper.cs" />
-    <Compile Include="DatabaseHelper.cs" />
-    <Compile Include="DayDataAnalyzer.cs" />
-    <Compile Include="MinuteDataAnalyzer.cs" />
-    <Compile Include="MonthDataAnalyzer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Stock.cs" />
-    <Compile Include="TradeData.cs" />
-    <Compile Include="WeekDataAnalyzer.cs" />
-    <Compile Include="WeekData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -64,6 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Stocks.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StockInspector.BLL\StockInspector.BLL.csproj">
+      <Project>{57394324-b209-4c74-8246-cf400788d766}</Project>
+      <Name>StockInspector.BLL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

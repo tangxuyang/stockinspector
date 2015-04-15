@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
+using StockInspector.BLL.Entity;
 
-namespace StockInspector
+namespace StockInspector.BLL.Database
 {
     public class DatabaseHelper
     {
@@ -43,7 +44,10 @@ namespace StockInspector
 
         public static void InsertIntoMinuteData(List<MinuteData> data)
         {
-            
+            if (data == null || data.Count == 0)
+            {
+                return;
+            }
             SqlCommand command = Command;
             SqlConnection conn = Conn;
             command.Connection = conn;
@@ -63,6 +67,10 @@ namespace StockInspector
 
         public static void InsertIntoDayData(List<DayData> data)
         {
+            if (data == null || data.Count == 0)
+            {
+                return;
+            }
             SqlCommand command = Command;
             SqlConnection conn = Conn;
             command.Connection = conn;
@@ -82,6 +90,10 @@ namespace StockInspector
 
         public static void InsertIntoWeekData(List<WeekData> data)
         {
+            if (data == null || data.Count == 0)
+            {
+                return;
+            }
             SqlCommand command = Command;
             SqlConnection conn = Conn;
             command.Connection = conn;
@@ -101,6 +113,10 @@ namespace StockInspector
 
         public static void InsertIntoMonthData(List<MonthData> data)
         {
+            if(data==null || data.Count==0)
+            {
+                return;
+            }
             SqlCommand command = Command;
             SqlConnection conn = Conn;
             command.Connection = conn;
@@ -118,7 +134,7 @@ namespace StockInspector
             conn.Close();
         }
 
-        public static void InsertIntoStock(List<Stock> data)
+        public static void InsertIntoStock(List<StockEntity> data)
         {
             SqlCommand command = Command;
             SqlConnection conn = Conn;
@@ -135,6 +151,89 @@ namespace StockInspector
 
             command.ExecuteNonQuery();
             conn.Close();
+        }
+
+        public static StockEntity FindByID(string stockID)
+        {
+            StockEntity entity = null;
+            string sql = "select * from stock where stockid = '" + stockID + "'";
+
+            SqlCommand command = Command;
+            SqlConnection conn = Conn;
+            command.Connection = conn;
+            conn.Open();
+
+            command.CommandText = sql;
+
+            var reader = command.ExecuteReader();
+            if(reader.Read())
+            {
+                entity = new StockEntity() { 
+                    StockID = reader["stockid"].ToString(),
+                    StockName = reader["stockname"].ToString()
+                };
+            }
+
+            conn.Close();
+
+            return entity;
+        }
+
+        public static void DeleteStock(StockEntity stock)
+        {
+            string sql = "delete from stock where stockid = '" + stock.StockID + "'";
+
+            SqlCommand command = Command;
+            SqlConnection conn = Conn;
+            command.Connection = conn;
+            conn.Open();
+
+            command.CommandText = sql;
+
+            command.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        public static void ClearStock()
+        {
+            string sql = "delete from stock";
+
+            SqlCommand command = Command;
+            SqlConnection conn = Conn;
+            command.Connection = conn;
+            conn.Open();
+
+            command.CommandText = sql;
+
+            command.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        public static List<StockEntity> GetAllStocks()
+        {
+            List<StockEntity> stocks = new List<StockEntity>();
+            string sql = "select * from stock";
+
+            SqlCommand command = Command;
+            SqlConnection conn = Conn;
+            command.Connection = conn;
+            conn.Open();
+
+            command.CommandText = sql;
+
+            var reader = command.ExecuteReader();
+            while(reader.Read())
+            {
+                stocks.Add( new StockEntity()
+                {
+                    StockID = reader["stockid"].ToString(),
+                    StockName = reader["stockname"].ToString()
+                });
+            }
+
+            conn.Close();
+
+            return stocks;
         }
     }
 }
