@@ -11,10 +11,20 @@ namespace StockInspector.BLL.Net
 {
     public class NetHelper
     {
-        public static string minuteUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_1&t=202122";
-        public static string dayUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_6&t=202122";
-        public static string weekUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_7&t=202122";
-        public static string monthUrl = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_8&t=202122"; 
+        public static string minuteUrl_SH = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_1&t=202122";
+        public static string dayUrl_SH = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_6&t=202122";
+        public static string weekUrl_SH = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_7&t=202122";
+        public static string monthUrl_SH = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_1_8&t=202122";
+
+        public static string minuteUrl_SZ = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_1&t=202122";
+        public static string dayUrl_SZ = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_6&t=202122";
+        public static string weekUrl_SZ = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_7&t=202122";
+        public static string monthUrl_SZ = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_8&t=202122";
+
+        public static string minuteUrl_SZC = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_1&t=202122";
+        public static string dayUrl_SZC = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_6&t=202122";
+        public static string weekUrl_SZC = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_7&t=202122";
+        public static string monthUrl_SZC = "http://cq.ssajax.cn/interact/getTradedata.ashx?pic=qmpic_{0}_2_8&t=202122";
 
         public static void DownloadFile(string url, string file)
         {

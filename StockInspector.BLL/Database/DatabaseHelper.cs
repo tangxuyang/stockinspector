@@ -141,10 +141,10 @@ namespace StockInspector.BLL.Database
             command.Connection = conn;
             conn.Open();
             StringBuilder sql = new StringBuilder();
-            string format = "insert into stock(stockid,stockname) values('{0}','{1}');";
+            string format = "insert into stock(stockid,stockname,stocktype) values('{0}','{1}','{2}');";
             foreach (var d in data)
             {
-                sql.Append(string.Format(format, d.StockID, d.StockName));
+                sql.Append(string.Format(format, d.StockID, d.StockName,d.StockType));
             }
 
             command.CommandText = sql.ToString();
@@ -227,7 +227,8 @@ namespace StockInspector.BLL.Database
                 stocks.Add( new StockEntity()
                 {
                     StockID = reader["stockid"].ToString(),
-                    StockName = reader["stockname"].ToString()
+                    StockName = reader["stockname"].ToString(),
+                    StockType = reader["stocktype"].ToString()
                 });
             }
 

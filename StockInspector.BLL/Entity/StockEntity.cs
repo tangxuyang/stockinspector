@@ -10,5 +10,11 @@ namespace StockInspector.BLL.Entity
     {
         public string StockID { get; set; }
         public string StockName { get; set; }
+        /// <summary>
+        /// 上海-SH 
+        /// 深证-SZ
+        /// 创业板-SZC
+        /// </summary>
+        public string StockType { get; set; }
     }
 }

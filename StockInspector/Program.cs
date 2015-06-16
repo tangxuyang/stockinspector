@@ -48,7 +48,7 @@ namespace StockInspector
             StreamReader sr = new StreamReader(path);
             var stocks = Stock.GetStocks(sr.ReadToEnd());
 
-            return stocks;
+            return null;
         }
 
         static void Analyze()

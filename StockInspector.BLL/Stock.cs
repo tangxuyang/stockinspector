@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StockInspector.BLL.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,10 @@ namespace StockInspector.BLL
 {
     public class Stock
     {
-        public static Dictionary<string,string> GetStocks(string html)
+        public static List<StockEntity> GetStocks(string html)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            //Dictionary<string, string> result = new Dictionary<string, string>();
+            List<StockEntity> stockes = new List<StockEntity>();
             //string path = "../../Stocks.xml";
             XmlDocument doc = new XmlDocument();
             //doc.Load(path);
@@ -22,11 +24,15 @@ namespace StockInspector.BLL
             {
                 foreach (XmlNode li in ul.ChildNodes)
                 {
-                    result.Add(li.FirstChild.FirstChild.InnerText,li.LastChild.InnerText);
+                    //result.Add(li.FirstChild.FirstChild.InnerText,li.LastChild.InnerText);
+                    stockes.Add(new StockEntity() {
+                        StockID = li.FirstChild.FirstChild.InnerText,
+                        StockName = li.LastChild.InnerText
+                    });
                 }
             }
 
-            return result;
+            return stockes;
         }
     }
 }

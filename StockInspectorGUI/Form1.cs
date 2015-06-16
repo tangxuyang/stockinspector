@@ -23,10 +23,12 @@ namespace StockInspectorGUI
             InitializeComponent();
         }
 
-        private Dictionary<string, string> stocks;
+        //private Dictionary<string, string> stocks;
+        private List<StockEntity> stocks;
 
         private void btn_DownladStock_Click(object sender, EventArgs e)
         {
+            stocks = new List<StockEntity>();
             dataGridView1.Rows.Clear();
             string url = tb_StockIndex.Text;
             string str = NetHelper.DownloadFile(url);
@@ -35,25 +37,37 @@ namespace StockInspectorGUI
             int endIndex = str.IndexOf("</ul>", startIndex);
 
             string shA = str.Substring(startIndex, endIndex - startIndex + 5);
+            var tempstocks = StockInspector.BLL.Stock.GetStocks("<root>" + shA +"</root>");
+            tempstocks.ForEach(sk => sk.StockType = "SHA");
+            stocks.AddRange(tempstocks);
 
             startIndex = str.IndexOf("<ul class=\"seo_pageList\"",endIndex);
             endIndex = str.IndexOf("</ul>", startIndex);
             string shB = str.Substring(startIndex, endIndex - startIndex + 5);
+            tempstocks = StockInspector.BLL.Stock.GetStocks("<root>" + shB + "</root>");
+            tempstocks.ForEach(sk => sk.StockType = "SHB");
+            stocks.AddRange(tempstocks);
 
             startIndex = str.IndexOf("<ul class=\"seo_pageList\"", endIndex);
             endIndex = str.IndexOf("</ul>", startIndex);
             string szA = str.Substring(startIndex, endIndex - startIndex + 5);
-
+            tempstocks = StockInspector.BLL.Stock.GetStocks("<root>" + szA + "</root>");
+            tempstocks.ForEach(sk => sk.StockType = "SZA");
+            stocks.AddRange(tempstocks);
 
             startIndex = str.IndexOf("<ul class=\"seo_pageList\"", endIndex);
             endIndex = str.IndexOf("</ul>", startIndex);
             string szB = str.Substring(startIndex, endIndex - startIndex + 5);
+            tempstocks = StockInspector.BLL.Stock.GetStocks("<root>" + szB + "</root>");
+            tempstocks.ForEach(sk => sk.StockType = "SZB");
+            stocks.AddRange(tempstocks);
+            
 
-            stocks = StockInspector.BLL.Stock.GetStocks("<root>" + shA + shB + szA + szB + "</root>");
+            //stocks = StockInspector.BLL.Stock.GetStocks("<root>" + shA + shB + szA + szB + "</root>");
 
             foreach(var v in stocks)
             {
-                dataGridView1.Rows.Add(v.Key, v.Value);
+                dataGridView1.Rows.Add(v.StockID,v.StockName,v.StockType);
             }
         }
 
@@ -61,16 +75,16 @@ namespace StockInspectorGUI
         {
             if (stocks != null)
             {
-                List<StockInspector.BLL.Entity.StockEntity> sts = new List<StockInspector.BLL.Entity.StockEntity>();
-                foreach(var v in stocks)
-                {
-                    sts.Add(new StockInspector.BLL.Entity.StockEntity() {
-                        StockID = v.Key,
-                        StockName = v.Value
-                    });
-                }
-                StockInspector.BLL.Database.DatabaseHelper.ClearStock();
-                StockInspector.BLL.Database.DatabaseHelper.InsertIntoStock(sts);
+                //List<StockInspector.BLL.Entity.StockEntity> sts = new List<StockInspector.BLL.Entity.StockEntity>();
+                //foreach(var v in stocks)
+                //{
+                //    sts.Add(new StockInspector.BLL.Entity.StockEntity() {
+                //        StockID = v.Key,
+                //        StockName = v.Value
+                //    });
+                //}
+                //StockInspector.BLL.Database.DatabaseHelper.ClearStock();
+                StockInspector.BLL.Database.DatabaseHelper.InsertIntoStock(stocks);
             }
         }
 
@@ -79,7 +93,7 @@ namespace StockInspectorGUI
             var stocks = StockInspector.BLL.Database.DatabaseHelper.GetAllStocks();
             foreach(var stock in stocks)
             {
-                dgv_Stocks.Rows.Add(false,stock.StockID, stock.StockName);
+                dgv_Stocks.Rows.Add(false,stock.StockID, stock.StockName,stock.StockType);
             }
         }
 
@@ -111,7 +125,7 @@ namespace StockInspectorGUI
                 var checkBox = item.Cells[0] as DataGridViewCheckBoxCell;
                 if(checkBox.Value!=null&&bool.Parse(checkBox.Value.ToString()))
                 {
-                    lb_Stocks.Items.Add(item.Cells[1].Value.ToString()+"-"+item.Cells[2].Value.ToString());
+                    lb_Stocks.Items.Add(item.Cells[1].Value.ToString()+"-"+item.Cells[2].Value.ToString()+"-"+item.Cells[3].Value.ToString());
                 }
             }
         }
@@ -136,7 +150,8 @@ namespace StockInspectorGUI
                         string[] strs = str.Split('-');
                         stocks.Add(new StockEntity() { 
                             StockID = strs[0],
-                            StockName = strs[1]
+                            StockName = strs[1],
+                            StockType = strs[2]
                         });
                     }
                 }
@@ -164,6 +179,86 @@ namespace StockInspectorGUI
             MessageBox.Show("成功!");
         }
 
+        private string GetDownloadUrl(string stockID,string stockType,string type)
+        {
+            string urlTemplate = "";
+            
+
+            switch(type)
+            {
+                case "Minute":
+                    switch (stockType)
+                    {
+                        case "SHA":
+                            urlTemplate = NetHelper.minuteUrl_SH;
+                            break;
+                        case "SHB":
+                            urlTemplate = NetHelper.minuteUrl_SH;
+                            break;
+                        case "SZA":
+                            urlTemplate = NetHelper.minuteUrl_SZ;
+                            break;
+                        case "SZB":
+                            urlTemplate = NetHelper.minuteUrl_SZC;
+                            break;
+                    }
+                    break;
+                case "Day":
+                    switch (stockType)
+                    {
+                        case "SHA":
+                            urlTemplate = NetHelper.dayUrl_SH;
+                            break;
+                        case "SHB":
+                            urlTemplate = NetHelper.dayUrl_SH;
+                            break;
+                        case "SZA":
+                            urlTemplate = NetHelper.dayUrl_SZ;
+                            break;
+                        case "SZB":
+                            urlTemplate = NetHelper.dayUrl_SZC;
+                            break;
+                    }
+                    break;
+                case "Week":
+                    switch (stockType)
+                    {
+                        case "SHA":
+                            urlTemplate = NetHelper.weekUrl_SH;
+                            break;
+                        case "SHB":
+                            urlTemplate = NetHelper.weekUrl_SH;
+                            break;
+                        case "SZA":
+                            urlTemplate = NetHelper.weekUrl_SZ;
+                            break;
+                        case "SZB":
+                            urlTemplate = NetHelper.weekUrl_SZC;
+                            break;
+                    }
+                    break;
+                case "Month":
+                    switch (stockType)
+                    {
+                        case "SHA":
+                            urlTemplate = NetHelper.monthUrl_SH;
+                            break;
+                        case "SHB":
+                            urlTemplate = NetHelper.monthUrl_SH;
+                            break;
+                        case "SZA":
+                            urlTemplate = NetHelper.monthUrl_SZ;
+                            break;
+                        case "SZB":
+                            urlTemplate = NetHelper.monthUrl_SZC;
+                            break;
+                    }
+                    break;
+            }
+
+            return string.Format(urlTemplate, stockID);
+        }
+
         private void DownloadAndImport(List<StockEntity> stocks,string type="All")
         {
             if(stocks.Count>0)
@@ -188,7 +283,8 @@ namespace StockInspectorGUI
                             {
                                 i++;
                                 SetProgress(i, stocks.Count);
-                                str = NetHelper.DownloadFile(string.Format(NetHelper.minuteUrl, stock.StockID));
+                                //str = NetHelper.DownloadFile(string.Format(NetHelper.minuteUrl, stock.StockID));
+                                str = NetHelper.DownloadFile(GetDownloadUrl(stock.StockID,stock.StockType,"Minute"));
                                 if (string.IsNullOrEmpty(str))
                                 {
                                     continue;
@@ -197,7 +293,7 @@ namespace StockInspectorGUI
                                 DatabaseHelper.InsertIntoMinuteData(minuteData);
                                 Sleep(400);
 
-                                str = NetHelper.DownloadFile(string.Format(NetHelper.dayUrl, stock.StockID));
+                                str = NetHelper.DownloadFile(GetDownloadUrl(stock.StockID, stock.StockType, "Day"));
                                 if (string.IsNullOrEmpty(str))
                                 {
                                     continue;
@@ -206,7 +302,7 @@ namespace StockInspectorGUI
                                 DatabaseHelper.InsertIntoDayData(dayData);
                                 Sleep(400);
 
-                                str = NetHelper.DownloadFile(string.Format(NetHelper.weekUrl, stock.StockID));
+                                str = NetHelper.DownloadFile(GetDownloadUrl(stock.StockID, stock.StockType, "Week"));
                                 if (string.IsNullOrEmpty(str))
                                 {
                                     continue;
@@ -215,7 +311,7 @@ namespace StockInspectorGUI
                                 DatabaseHelper.InsertIntoWeekData(weekData);
                                 Sleep(400);
 
-                                str = NetHelper.DownloadFile(string.Format(NetHelper.monthUrl, stock.StockID));
+                                str = NetHelper.DownloadFile(GetDownloadUrl(stock.StockID, stock.StockType, "Month"));
                                 if (string.IsNullOrEmpty(str))
                                 {
                                     continue;
@@ -242,7 +338,7 @@ namespace StockInspectorGUI
                             {
                                 i++;
                                 SetProgress(i, stocks.Count);
-                                str = NetHelper.DownloadFile(string.Format(NetHelper.minuteUrl, stock.StockID));
+                                str = NetHelper.DownloadFile(GetDownloadUrl(stock.StockID, stock.StockType, "Minute"));
                                 if (string.IsNullOrEmpty(str))
                                 {
                                     continue;
@@ -265,7 +361,7 @@ namespace StockInspectorGUI
                             {
                                 i++;
                                 SetProgress(i, stocks.Count);
-                                str = NetHelper.DownloadFile(string.Format(NetHelper.dayUrl, stock.StockID));
+                                str = NetHelper.DownloadFile(GetDownloadUrl(stock.StockID, stock.StockType, "Day"));
                                 if (string.IsNullOrEmpty(str))
                                 {
                                     continue;
@@ -288,7 +384,7 @@ namespace StockInspectorGUI
                             {
                                 i++;
                                 SetProgress(i, stocks.Count);
-                                str = NetHelper.DownloadFile(string.Format(NetHelper.weekUrl, stock.StockID));
+                                str = NetHelper.DownloadFile(GetDownloadUrl(stock.StockID, stock.StockType, "Week"));
                                 if (string.IsNullOrEmpty(str))
                                 {
                                     continue;
@@ -311,7 +407,7 @@ namespace StockInspectorGUI
                             {
                                 i++;
                                 SetProgress(i, stocks.Count);
-                                str = NetHelper.DownloadFile(string.Format(NetHelper.monthUrl, stock.StockID));
+                                str = NetHelper.DownloadFile(GetDownloadUrl(stock.StockID, stock.StockType, "Month"));
                                 if (string.IsNullOrEmpty(str))
                                 {
                                     continue;
@@ -348,6 +444,11 @@ namespace StockInspectorGUI
                 pb_Download.Value = n;
                 lb_Download.Text = n.ToString() + "/" + total.ToString();
             }
+        }
+
+        private void tp_Stocks_Click(object sender, EventArgs e)
+        {
+
         }
 
         
